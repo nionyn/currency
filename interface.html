@@ -1,0 +1,93 @@
+<html>
+<head>
+
+<link rel="stylesheet" href="style.css"/>
+
+<script>
+		
+			//code to populate currencies list
+		
+			var xhttp;
+			xhttp = new XMLHttpRequest();
+			xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				myFunction(this);
+			}};
+			xhttp.open("GET", "rates/lastrates.xml", true);
+			xhttp.send();
+		 
+			function myFunction(xml) {
+			var x, i, xmlDoc; 
+			xmlDoc = xml.responseXML;
+			x = xmlDoc.getElementsByTagName("rate");
+			var from_sel = document.getElementById('from');
+			var to_sel = document.getElementById('to');
+
+			//add each currency to the <select> html
+			for (i = 0; i < x.length; i++) { 
+				var opt = document.createElement('option');
+				var code = x[i].getAttribute("code");
+				var live = x[i].getAttribute("live")
+					if (live == 1) {
+						opt.appendChild( document.createTextNode(code));
+						opt.value = code;
+						from_sel.appendChild(opt); 
+					}
+				}
+				
+			to_sel.innerHTML = from_sel.innerHTML;
+				
+			}
+		
+		
+			// code to send and recieve data to php update
+			var url;
+			function loadDoc(url) {
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+					document.getElementById("response_text_box").innerHTML = this.responseText;
+					console.log(this.responseText);
+					}};
+				xhttp.open("GET", url, true);
+				xhttp.send();
+			}
+         
+			function sendRequest() {  
+				val = document.querySelector('input[name="update"]:checked').id;
+				cur = document.getElementById('currencies');
+				url = 'update/index.php?cur='+cur.value+'&action='+val;
+				loadDoc(url);
+			}
+		</script>
+
+
+</head>
+<body>
+<div id="container">
+	<div id="main">
+		<form action="process.php" method="get">
+			
+			<label for="amnt">Amount:</label>
+			<input id="amnt" name="amnt" type="text">
+			
+			<label for="from">From:</label>
+			<select id="from" name="from"></select>
+			
+			<label for="to">To:</label>
+			<select id="to" name="to"></select>
+
+			
+			<input id="submit" type="submit">
+			
+			<label for="format">Format:</label>
+			<select id="format" name="format">
+				<option value="xml">xml</option>
+				<option value="json">json</option>
+			</select>
+		</form>
+	</div>
+</div>
+
+</body>
+<html>
